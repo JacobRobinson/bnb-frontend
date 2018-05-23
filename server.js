@@ -13,6 +13,7 @@ const knexConfig  = require("./knexfile");
 const knex        = require("knex")(knexConfig[ENV]);
 const morgan      = require('morgan');
 const knexLogger  = require('knex-logger');
+const request     = require('request-promise');
 
 // Seperated Routes for each Resource
 const usersRoutes = require("./routes/users");
@@ -41,6 +42,44 @@ app.use("/api/users", usersRoutes(knex));
 // Home page
 app.get("/", (req, res) => {
   res.render("index");
+});
+
+app.post("/listings", (req, res) => {
+  // log the user in. make room for an access token
+  let authRequest = {
+    method: 'POST',
+    uri: 'http://localhost:3030/authentication',
+    body: {
+      strategy: 'local',
+      email: req.body.email,
+      password: req.body.password
+    },
+    json: true
+  }
+  let accessToken;
+  request(authRequest).then( authResponse => {
+    accessToken = authResponse.accessToken;
+  }).catch( err => {
+    console.error('AUTH ERROR');
+    res.redirect('/');
+  })
+  // get all listings
+  let listingsRequest = {
+    method: 'GET',
+    uri: 'http://localhost:3030/properties',
+    headers: {
+      Authorization: 'Bearer ' + accessToken
+    }
+  }
+  request(listingsRequest).then( listingsResponse => {
+    console.log(listingsResponse);
+    res.render('listings', {
+      listings: listingsResponse
+    });
+  }).catch( err => {
+    console.error('LISTINGS ERROR');
+    res.redirect('/');
+  });
 });
 
 app.listen(PORT, () => {

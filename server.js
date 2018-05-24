@@ -75,7 +75,7 @@ app.post("/listings", (req, res) => {
   request(listingsRequest).then( listingsResponse => {
     console.log(listingsResponse);
     res.render('listings', {
-      listings: listingsResponse
+      listings: JSON.parse(listingsResponse)
     });
   }).catch( err => {
     console.error('LISTINGS ERROR');

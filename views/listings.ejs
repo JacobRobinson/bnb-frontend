@@ -36,17 +36,37 @@
   <body>
 
     <div class="container">
-        <% listings.forEach( (listing) => {
+        <% listings.forEach( (listing) => { %>
             <div class="row">
-                <p><%= listing.name></p>
-                <p><%= listing.address></p>
-                <p><%= listing.type></p>
-                <p><%= listing.capacity></p>
-                <p><%= listing.beds></p>
-                <p><%= listing.price></p>
-                <img src="<listing.image_url>">
+                <div class="col">
+                    <h2>Name</h2>
+                    </p><%= listing.name%></p>
+                </div>
+                <div class="col">
+                    <h2>Address</h2>
+                    <p><%= listing.address%></p>
+                </div>
+                <div class="col">
+                    <h2>Listing</h2>
+                    <p><%= listing.type%></p>
+                </div>
+                <div class="col">
+                    <h2>Capacity</h2>
+                    <p><%= listing.capacity%></p>
+                </div>
+                <div class="col">
+                    <h2>Beds:</h2>
+                    <p><%= listing.beds%></p>
+                </div>
+                <div class="col">
+                    <h2>Price (CAD)</h2>
+                    <p><%= listing.price%></p>
+                </div>
+                <div class="col">
+                    <img src="<%=listing.image_url%>">
+                </div>
             </div>
-            })
+        <% }) %>
     </div>
       
   </body>

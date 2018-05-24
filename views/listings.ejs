@@ -35,33 +35,19 @@
 
   <body>
 
-
-
     <div class="container">
-        <div class="row">
-          <div class="col">
-            1 of 2
-          </div>
-          <div class="col">
-            2 of 2
-          </div>
-        </div>
-        <div class="row">
-          <div class="col">
-            1 of 3
-          </div>
-          <div class="col">
-            2 of 3
-          </div>
-          <div class="col">
-            3 of 3
-          </div>
-        </div>
-      </div>
+        <% listings.forEach( (listing) => {
+            <div class="row">
+                <p><%= listing.name></p>
+                <p><%= listing.address></p>
+                <p><%= listing.type></p>
+                <p><%= listing.capacity></p>
+                <p><%= listing.beds></p>
+                <p><%= listing.price></p>
+                <img src="<listing.image_url>">
+            </div>
+            })
+    </div>
       
-
-
-    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
-    <script src="../../assets/js/ie10-viewport-bug-workaround.js"></script>
   </body>
 </html>

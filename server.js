@@ -62,7 +62,8 @@ app.post("/listings", (req, res) => {
   }).catch( err => {
     console.error('AUTH ERROR');
     res.redirect('/');
-  })
+  });
+
   // get all listings
   let listingsRequest = {
     method: 'GET',

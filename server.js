@@ -14,7 +14,8 @@ const knex        = require("knex")(knexConfig[ENV]);
 const morgan      = require('morgan');
 const knexLogger  = require('knex-logger');
 const request     = require('request-promise');
-const jwtDecoder         = require('jwt-decode');
+const jwtDecoder  = require('jwt-decode');
+const cookieParser= require('cookie-parser');
 
 // Seperated Routes for each Resource
 const usersRoutes = require("./routes/users");
@@ -26,6 +27,9 @@ app.use(morgan('dev'));
 
 // Log knex SQL queries to STDOUT as well
 app.use(knexLogger(knex));
+
+// Need to parse cookies
+app.use(cookieParser());
 
 app.set("view engine", "ejs");
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -45,7 +49,7 @@ app.get("/", (req, res) => {
   res.render("index");
 });
 
-app.post("/listings", async (req, res) => {
+app.post("/listings", (req, res) => {
   // log the user in
   let authRequest = {
     method: 'POST',
@@ -82,6 +86,24 @@ app.post("/listings", async (req, res) => {
   });
 });
 
+app.get("/listings", (req, res) => {
+  let listingsRequest = {
+    method: 'GET',
+    uri: 'http://localhost:3030/properties',
+    headers: {
+      Authorization: 'Bearer ' + req.cookies.accessToken
+    }
+  }
+  //send the listings request
+  request(listingsRequest).then( listingsResponse => {
+    res.render('listings', { listings: JSON.parse(listingsResponse) });
+  }).catch( err => {
+    console.error('AUTH ERROR');
+    res.redirect('/');
+  });
+});
+
+
 // Go to add
 app.get("/add", (req, res) => {
   res.render("add");
@@ -89,20 +111,31 @@ app.get("/add", (req, res) => {
 
 // Add a property
 app.post("/add", (req, res) => {
-  console.log(req.cookies);
-  // let addListingsRequest = {
-  //   method: 'POST',
-  //   uri: 'http://localhost:3030/properties',
-  //   headers: {
-  //     Authorization: 'Bearer ' + req.cookies.accessToken
-  //   },
-  //   // body: {
-
-  //   // }
-  // }
-  // request(addListingsRequest).then( addListingsResponse => {
-  //   console.log(listingsResponse);
-  // });
+  let addListingsRequest = {
+    method: 'POST',
+    uri: 'http://localhost:3030/properties',
+    headers: {
+      Authorization: 'Bearer ' + req.cookies.accessToken
+    },
+    body: {
+      name: req.body.name,
+      address: req.body.address,
+      type: req.body.type,
+      capacity: req.body.capacity,
+      beds: req.body.beds,
+      price: req.body.price,
+      image_url: req.body.imageUrl,
+      owner: req.cookies.uid
+    },
+    json: true
+  }
+  request(addListingsRequest).then( addListingsResponse => {
+    res.redirect('/listings');
+  }).catch( err => {
+    console.error(err);
+    console.log('ADD LISTING ERROR');
+    res.redirect('/add');
+  });
 });
 
 app.listen(PORT, () => {

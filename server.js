@@ -133,8 +133,33 @@ app.post("/add", (req, res) => {
     res.redirect('/listings');
   }).catch( err => {
     console.error(err);
-    console.log('ADD LISTING ERROR');
+    console.error('ADD LISTING ERROR');
     res.redirect('/add');
+  });
+});
+
+app.get('/book', (req, res) => {
+  res.render('book');
+})
+
+app.post('/book', (req, res) =>{
+  let bookingRequest = {
+    method: 'POST',
+    uri: 'http://localhost:3030/bookings',
+    headers: {
+      Authorization: 'Bearer ' + req.cookies.accessToken
+    },
+    body: {
+      
+    },
+    json: true
+  }
+  request(bookingRequest).then( bookingResponse => {
+    res.redirect('/listings');
+  }).catch( err => {
+    console.error(err);
+    console.error('Booking ERROR');
+    res.redirect('/book');
   });
 });
 
